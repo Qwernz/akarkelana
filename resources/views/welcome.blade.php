@@ -10,7 +10,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    <img src="{{ asset('Images/Logo.jpg') }}" alt="Logo Akar Kelana" class="h-12 w-auto">
+    <img src="{{ asset('Images/Logo.jpg') }}" alt="Logo Akar Kelana" class="h-12 w-auto object-contain">
 
     <style>
         body {
