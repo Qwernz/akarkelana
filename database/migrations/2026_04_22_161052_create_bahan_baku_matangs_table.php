@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('bahan_baku_matangs', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('bahan_baku_id')->constrained('bahan_bakus')->onDelete('cascade');
             $table->string('nama_biji'); // Contoh: Arabika Gayo Roasted
             $table->decimal('stok_kg', 10, 2)->default(0);
             $table->timestamps();

@@ -12,6 +12,7 @@ return new class extends Migration
 public function up() {
     Schema::create('bahan_baku_logs', function (Blueprint $table) {
         $table->id();
+        $table->foreignId('bahan_baku_id')->constrained('bahan_bakus')->onDelete('cascade');
         $table->string('nama_bahan');
         $table->decimal('jumlah_beli', 10, 2); // Jumlah kg yang dibeli
         $table->decimal('harga_beli', 15, 2);  // Biaya yang dikeluarkan
