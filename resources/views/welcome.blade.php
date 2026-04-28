@@ -54,7 +54,7 @@
             <a href="#produk" class="hover:text-orange-700 font-semibold text-stone-700 transition">Produk</a>
 
             @auth
-            {{-- Keranjang HANYA muncul untuk Pelanggan (user) dan Kasir --}}
+            {{-- Keranjang HANYA muncul untuk Pelanggan dan Kasir --}}
             @if(Auth::user()->role === 'user' || Auth::user()->role === 'kasir')
             <a href="{{ route('cart') }}" class="relative p-2.5 bg-stone-100 rounded-full hover:bg-stone-200 transition text-stone-700">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
