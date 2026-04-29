@@ -25,35 +25,32 @@ class ProductController extends Controller
         return view('admin.products.create');
     }
 
-    // 3. MENYIMPAN PRODUK BARU DENGAN VARIAN
+    // 3. MENYIMPAN PRODUK BARU
     public function store(Request $request)
     {
         $request->validate([
-            'name'        => 'required',
-            'description' => 'nullable',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'variants'    => 'required|array',
+            'name'         => 'required',
+            'description'  => 'nullable',
+            'image'        => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'variants'     => 'required|array',
         ]);
 
-        // Upload Gambar
         $imagePath = null;
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
+            // MENGGUNAKAN I BESAR
             $file->move(public_path('Images/products'), $filename);
             $imagePath = 'Images/products/' . $filename;
         }
 
-        // 1. Simpan Produk Utama
         $product = Product::create([
             'name'        => $request->name,
             'description' => $request->description,
             'image'       => $imagePath,
         ]);
 
-        // 2. Simpan Varian (100g, 200g, 500g, 1kg)
         foreach ($request->variants as $weight => $data) {
-            // Hanya simpan jika checkbox 'active' dicentang
             if (isset($data['active'])) {
                 $product->variants()->create([
                     'weight'    => $weight,
@@ -80,21 +77,21 @@ class ProductController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('images/products'), $filename);
-            $data['image'] = 'images/products/' . $filename;
 
+            // PERBAIKAN: DISINI TADI 'images' (i kecil), SAYA UBAH JADI 'Images' (I besar)
+            $file->move(public_path('Images/products'), $filename);
+            $data['image'] = 'Images/products/' . $filename;
+
+            // Hapus foto lama jika ada
             if ($product->image && file_exists(public_path($product->image))) {
                 unlink(public_path($product->image));
             }
         }
 
-        // 1. Update data utama
         $product->update($data);
 
-        // 2. Update Varian (Hapus yang lama, ganti yang baru atau update yang ada)
-        // Cara termudah: hapus semua varian lama dan buat ulang berdasarkan input baru
+        // Update Varian
         $product->variants()->delete();
-
         foreach ($request->variants as $weight => $vData) {
             if (isset($vData['active'])) {
                 $product->variants()->create([

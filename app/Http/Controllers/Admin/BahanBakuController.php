@@ -210,23 +210,34 @@ class BahanBakuController extends Controller
 
     public function restock(Request $request)
     {
+        // 1. Validasi input (Pastikan nama field sesuai dengan yang dikirim form)
         $request->validate([
-            'nama_bahan' => 'required',
-            'jumlah_masuk' => 'required|numeric',
-            'harga_beli' => 'required|numeric',
-            'lokasi' => 'nullable|string', // Validasi lokasi
+            'bahan_baku_id' => 'required|exists:bahan_bakus,id',
+            'nama_bahan'    => 'required',
+            'jumlah_masuk'  => 'required|numeric',
+            'harga_beli'    => 'required|numeric',
+            'lokasi'        => 'nullable|string',
         ]);
 
-        // ... (kode update stok utama tetap sama) ...
+        // 2. Ambil data bahan baku yang mau di-restock
+        $bahanBaku = BahanBaku::findOrFail($request->bahan_baku_id);
 
-        // Update bagian pembuatan Log
+        // 3. Update stok di tabel BahanBaku (Sesuaikan nama kolom, apakah 'stok' atau 'stok_kg')
+        // Jika di migrasi namanya stok_kg, gunakan stok_kg
+        $bahanBaku->increment('stok_kg', $request->jumlah_masuk);
+
+        // 4. Update Total Pengeluaran di tabel BahanBaku
+        $bahanBaku->increment('total_biaya_pengeluaran', $request->harga_beli);
+
+        // 5. Simpan Log (PENTING: Masukkan bahan_baku_id agar tidak error)
         \App\Models\BahanBakuLog::create([
-            'nama_bahan' => $request->nama_bahan,
-            'jumlah_beli' => $request->jumlah_masuk,
-            'harga_beli' => $request->harga_beli,
-            'lokasi' => $request->lokasi, // Simpan lokasi ke database
+            'bahan_baku_id' => $bahanBaku->id, // Ini kunci agar tidak error 'Undefined constant'
+            'nama_bahan'    => $request->nama_bahan,
+            'jumlah_beli'   => $request->jumlah_masuk,
+            'harga_beli'    => $request->harga_beli,
+            'lokasi'        => $request->lokasi,
         ]);
 
-        return back()->with('success', 'Pembelian berhasil dicatat!');
+        return back()->with('success', 'Pembelian berhasil dicatat dan stok diperbarui!');
     }
 }
