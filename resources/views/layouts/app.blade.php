@@ -3,22 +3,12 @@
 
 <head>
     <meta charset="utf-8">
-    {{-- Meta Viewport Penting untuk HP --}}
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Akar Kelana - Dashboard</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/jpeg" href="{{ asset('Images/Logo.jpg') }}">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-
         [x-cloak] {
             display: none !important;
         }
@@ -28,6 +18,7 @@
             aside,
             header,
             nav,
+            form,
             button,
             .no-print {
                 display: none !important;
@@ -41,51 +32,60 @@
     </style>
 </head>
 
-<body class="bg-gray-100 antialiased">
-    {{-- HANYA SATU x-data DI SINI UNTUK SELURUH DASHBOARD --}}
-    <div x-data="{ sidebarOpen: false }" class="relative min-h-screen md:flex" x-cloak>
+{{-- HANYA SATU x-data sidebarOpen di body agar sinkron ke semua elemen --}}
 
-        {{-- MOBILE HEADER: Muncul cuma di HP --}}
-        <div class="bg-stone-900 text-white flex justify-between items-center p-4 md:hidden fixed top-0 left-0 right-0 z-[60]">
-            <span class="font-bold uppercase tracking-widest text-xs">Akar Kelana</span>
-            <button @click="sidebarOpen = !sidebarOpen" class="p-2 focus:outline-none bg-stone-800 rounded-lg">
-                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path x-show="!sidebarOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    <path x-show="sidebarOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
+<body class="font-sans antialiased bg-gray-100" x-data="{ sidebarOpen: false }">
+    <div class="flex h-screen overflow-hidden">
+
+        {{-- OVERLAY untuk HP: Muncul saat sidebar dibuka --}}
+        <div x-show="sidebarOpen"
+            x-transition:enter="transition-opacity ease-linear duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition-opacity ease-linear duration-300"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            @click="sidebarOpen = false"
+            class="fixed inset-0 bg-stone-900/60 z-[60] md:hidden" x-cloak>
         </div>
 
-        {{-- SIDEBAR: Menggunakan Transform agar tidak menutupi tombol di HP --}}
+        {{-- SIDEBAR --}}
         <aside
-            :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-            class="fixed inset-y-0 left-0 z-[70] bg-stone-900 text-white w-64 transform md:relative md:translate-x-0 transition duration-300 ease-in-out shadow-2xl flex flex-col">
+            :class="sidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64 md:translate-x-0 md:w-20 lg:w-64'"
+            class="fixed inset-y-0 left-0 z-[70] bg-stone-900 text-white transform transition-all duration-300 ease-in-out md:relative md:flex flex-col shadow-2xl">
 
+            {{-- Logo Section --}}
             <div class="p-6 flex items-center gap-3 border-b border-stone-800">
-                <img src="{{ asset('Images/Logo.jpg') }}" alt="Logo" class="w-10 h-10 rounded-lg object-cover border border-stone-700">
-                <div class="leading-tight">
-                    <p class="font-bold text-xs uppercase tracking-tight text-white">Akar Kelana</p>
-                    <p class="text-[9px] text-stone-500 uppercase">Coffee Roastery</p>
-                </div>
+                <a href="{{ route('home') }}" class="flex-shrink-0 p-1.5 rounded-lg text-stone-400 hover:bg-stone-800 hover:text-orange-500 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                </a>
+                {{-- Logo ini akan mengecil/hilang di tablet (md) jika ditutup, tapi muncul di HP/Desktop --}}
+                <a href="{{ route('home') }}" class="flex items-center overflow-hidden transition-opacity" :class="!sidebarOpen && 'md:hidden lg:flex'">
+                    <img src="{{ asset('Images/Logo.jpg') }}" alt="Logo" class="w-8 h-8 flex-shrink-0 rounded-lg object-cover border border-stone-800">
+                    <span class="ml-2 font-bold text-[10px] leading-tight text-white uppercase whitespace-nowrap">
+                        Akar Kelana <br> Coffee Roastery
+                    </span>
+                </a>
             </div>
 
-            <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+            <nav class="flex-1 px-4 space-y-2 mt-4 overflow-y-auto">
                 @auth
                 <x-sidebar-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     Dashboard
                 </x-sidebar-link>
 
                 @if(Auth::user()->role === 'admin')
-                <div class="px-3 pt-4 pb-1 text-[10px] font-black text-stone-600 uppercase tracking-[0.2em]">Manajemen</div>
+                <div class="px-3 pt-4 pb-2 text-[10px] font-bold text-stone-500 uppercase tracking-widest" :class="!sidebarOpen && 'md:hidden lg:block'">Manajemen</div>
                 <x-sidebar-link :href="route('admin.sales.analysis')" :active="request()->routeIs('admin.sales.analysis')">Analisis</x-sidebar-link>
-                <x-sidebar-link :href="route('products.index')" :active="request()->routeIs('products.*')">Produk Kopi</x-sidebar-link>
+                <x-sidebar-link :href="route('products.index')" :active="request()->routeIs('products.*')">Produk</x-sidebar-link>
                 <x-sidebar-link :href="route('admin.roasting')" :active="request()->routeIs('admin.roasting')">Bahan Baku</x-sidebar-link>
                 <x-sidebar-link :href="route('admin.orders')" :active="request()->routeIs('admin.orders')">Laporan</x-sidebar-link>
-                <x-sidebar-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">Daftar Akun</x-sidebar-link>
                 @endif
 
                 @if(Auth::user()->role === 'kasir')
-                <div class="px-3 pt-4 pb-1 text-[10px] font-black text-stone-600 uppercase tracking-[0.2em]">Transaksi</div>
+                <div class="px-3 pt-4 pb-2 text-xs font-bold text-stone-500 uppercase tracking-widest">Transaksi</div>
                 <x-sidebar-link :href="route('kasir.orders')" :active="request()->routeIs('kasir.orders')">Pesanan Masuk</x-sidebar-link>
                 @endif
                 @endauth
@@ -95,41 +95,50 @@
             <div class="p-4 border-t border-stone-800">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button class="flex items-center text-stone-400 hover:text-red-400 w-full px-3 py-2 transition text-sm font-bold">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <button class="flex items-center text-stone-400 hover:text-red-400 w-full px-3 py-2 transition text-sm">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
-                        Keluar
+                        <span class="ml-3 font-medium" :class="!sidebarOpen && 'md:hidden lg:block'">Keluar Akun</span>
                     </button>
                 </form>
             </div>
             @endauth
         </aside>
 
-        {{-- MAIN CONTENT AREA --}}
-        <div class="flex-1 flex flex-col h-screen overflow-hidden">
-            {{-- Header Desktop --}}
-            <header class="bg-white shadow-sm h-16 hidden md:flex items-center px-8 justify-between z-40">
-                <h2 class="text-sm font-bold text-stone-400 uppercase tracking-widest">Dashboard System</h2>
-                <div class="flex items-center gap-3">
-                    <div class="text-right">
-                        <p class="text-xs font-bold text-stone-800">{{ Auth::user()->name }}</p>
-                        <p class="text-[9px] text-orange-600 font-bold uppercase">{{ Auth::user()->role }}</p>
+        {{-- MAIN CONTENT WRAPPER --}}
+        <div class="flex-1 flex flex-col min-w-0">
+
+            {{-- NAVBAR --}}
+            <header class="bg-white shadow-sm h-16 flex items-center px-4 md:px-6 justify-between z-50">
+                <div class="flex items-center gap-4">
+                    {{-- TOMBOL TOGGLE SIDEBAR --}}
+                    <button @click="sidebarOpen = !sidebarOpen" class="p-2 rounded-lg text-stone-600 hover:bg-stone-100 focus:outline-none transition">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+
+                {{-- Profile Section --}}
+                <div class="flex items-center space-x-3">
+                    @auth
+                    <div class="text-right hidden sm:block">
+                        <p class="text-xs font-bold text-stone-800 uppercase leading-none">{{ Auth::user()->name }}</p>
+                        <span class="text-[9px] text-orange-600 font-bold tracking-tighter uppercase">{{ Auth::user()->role }}</span>
                     </div>
-                    <div class="h-8 w-8 rounded-full bg-stone-800 flex items-center justify-center text-white text-xs font-bold">
+                    <div class="h-8 w-8 rounded-full bg-stone-800 flex items-center justify-center text-white text-xs font-bold ring-2 ring-stone-100">
                         {{ substr(Auth::user()->name, 0, 1) }}
                     </div>
+                    @endauth
                 </div>
             </header>
 
-            {{-- Slot Konten Utama --}}
-            <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8 pt-20 md:pt-8 bg-gray-50">
+            {{-- SLOT CONTENT: area scrollable --}}
+            <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8 bg-gray-50">
                 {{ $slot }}
             </main>
         </div>
-
-        {{-- Overlay HP: Supaya tombol di bawah bisa dipencet kalau sidebar tutup --}}
-        <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 bg-black/50 z-[65] md:hidden"></div>
     </div>
 </body>
 
