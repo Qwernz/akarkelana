@@ -40,8 +40,8 @@ class ProductController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('images/products'), $filename);
-            $imagePath = 'images/products/' . $filename;
+            $file->move(public_path('Images/products'), $filename);
+            $imagePath = 'Images/products/' . $filename;
         }
 
         // 1. Simpan Produk Utama
