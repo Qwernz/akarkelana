@@ -155,13 +155,15 @@ class BahanBakuController extends Controller
     public function storeMatang(Request $request)
     {
         $request->validate([
-            'nama_biji' => 'required|string|max:255'
+            'nama_biji' => 'required|string|max:255',
+            'bahan_baku_id' => 'required|exists:bahan_bakus,id',
         ]);
 
-        // Menggunakan model BahanBakuMatang
+        // Menggunakan create
         \App\Models\BahanBakuMatang::create([
             'nama_biji' => $request->nama_biji,
-            'stok_kg'   => 0, // Awalnya stok kosong
+            'bahan_baku_id' => $request->bahan_baku_id,
+            'stok_kg' => 0,
         ]);
 
         return back()->with('success', 'Wadah biji matang berhasil didaftarkan!');

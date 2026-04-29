@@ -12,6 +12,7 @@ class BahanBakuMatang extends Model
     // Tambahkan baris ini untuk mengizinkan kolom diisi
     protected $fillable = [
         'nama_biji',
-        'stok_kg',
+        'bahan_baku_id',
+        'stok_kg'
     ];
 }

@@ -63,13 +63,37 @@
             </form>
         </div>
 
-        {{-- DAFTARKAN WADAH --}}
+        {{-- FORM PENDAFTARAN WADAH --}}
         <div class="max-w-5xl bg-stone-900 rounded-2xl shadow-xl overflow-hidden border border-stone-800 p-8 mb-8">
             <h3 class="text-sm font-bold text-orange-500 uppercase tracking-widest mb-4">Daftarkan Wadah Biji Matang Baru</h3>
-            <form action="{{ route('admin.bahan_baku.store_matang') }}" method="POST" class="flex gap-4">
+
+            {{-- Tampilkan error jika validasi gagal --}}
+            @if ($errors->any())
+            <div class="bg-red-500/10 border border-red-500 text-red-500 p-3 rounded-lg mb-4 text-xs">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+
+            <form action="{{ route('admin.bahan_baku.store_matang') }}" method="POST" class="flex flex-col md:flex-row gap-4">
                 @csrf
+                {{-- INPUT NAMA WADAH --}}
                 <input type="text" name="nama_biji" class="flex-1 rounded-xl border-stone-700 bg-stone-800 text-white text-sm focus:ring-orange-500" placeholder="Contoh: Arabika Gayo Roasted..." required>
-                <button type="submit" class="bg-stone-100 hover:bg-white text-stone-900 font-bold py-2 px-8 rounded-xl transition active:scale-95 text-sm uppercase">Tambah Wadah</button>
+
+                {{-- DROPDOWN PILIH SUMBER BIJI MENTAH (Wajib agar database tidak error) --}}
+                <select name="bahan_baku_id" class="flex-1 rounded-xl border-stone-700 bg-stone-800 text-white text-sm focus:ring-orange-500" required>
+                    <option value="">-- Pilih Sumber Biji Mentah --</option>
+                    @foreach($bahanMentah as $b)
+                    <option value="{{ $b->id }}">{{ $b->nama_bahan }}</option>
+                    @endforeach
+                </select>
+
+                <button type="submit" class="bg-stone-100 hover:bg-white text-stone-900 font-bold py-2 px-8 rounded-xl transition active:scale-95 text-sm uppercase">
+                    Tambah Wadah
+                </button>
             </form>
         </div>
 
