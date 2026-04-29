@@ -5,16 +5,13 @@
 
     {{-- NAVIGASI TAB --}}
     <div class="flex space-x-2 mb-8 bg-stone-200 p-1 rounded-xl w-fit">
-        <button onclick="switchTab('roasting')" id="btn-roasting"
-            class="tab-btn px-6 py-2.5 rounded-lg font-bold text-sm transition-all duration-200 bg-white text-orange-700 shadow-sm">
+        <button onclick="switchTab('roasting')" id="btn-roasting" class="tab-btn px-6 py-2.5 rounded-lg font-bold text-sm transition-all duration-200 bg-white text-orange-700 shadow-sm">
             1. Proses Roasting
         </button>
-        <button onclick="switchTab('packaging')" id="btn-packaging"
-            class="tab-btn px-6 py-2.5 rounded-lg font-bold text-sm transition-all duration-200 text-stone-600 hover:text-stone-800">
+        <button onclick="switchTab('packaging')" id="btn-packaging" class="tab-btn px-6 py-2.5 rounded-lg font-bold text-sm transition-all duration-200 text-stone-600 hover:text-stone-800">
             2. Packaging (Produk)
         </button>
-        <button onclick="switchTab('pemasukan')" id="btn-pemasukan"
-            class="tab-btn px-6 py-2.5 rounded-lg font-bold text-sm transition-all duration-200 text-stone-600 hover:text-stone-800">
+        <button onclick="switchTab('pemasukan')" id="btn-pemasukan" class="tab-btn px-6 py-2.5 rounded-lg font-bold text-sm transition-all duration-200 text-stone-600 hover:text-stone-800">
             3. Stok Biji Mentah
         </button>
     </div>
@@ -25,7 +22,6 @@
             <div class="bg-stone-50 px-8 py-4 border-b border-stone-100">
                 <h3 class="font-bold text-stone-800 uppercase text-xs tracking-widest">Form Roasting (Presisi Gram)</h3>
             </div>
-
             <form action="{{ route('admin.roasting.process') }}" method="POST" class="p-8">
                 @csrf
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -67,7 +63,7 @@
             </form>
         </div>
 
-        {{-- FORM PENDAFTARAN WADAH (DIPINDAH KE TAB 1) --}}
+        {{-- DAFTARKAN WADAH --}}
         <div class="max-w-5xl bg-stone-900 rounded-2xl shadow-xl overflow-hidden border border-stone-800 p-8 mb-8">
             <h3 class="text-sm font-bold text-orange-500 uppercase tracking-widest mb-4">Daftarkan Wadah Biji Matang Baru</h3>
             <form action="{{ route('admin.bahan_baku.store_matang') }}" method="POST" class="flex gap-4">
@@ -77,7 +73,7 @@
             </form>
         </div>
 
-        {{-- TABEL MONITORING BIJI MATANG DENGAN EDIT & HAPUS --}}
+        {{-- TABEL BIJI MATANG --}}
         <div class="max-w-5xl">
             <span class="font-bold text-[10px] text-stone-400 uppercase tracking-widest block mb-4">Persediaan Biji Matang (Roasted)</span>
             <div class="overflow-hidden rounded-xl border border-stone-100 bg-white">
@@ -98,7 +94,7 @@
                                 <span class="bg-orange-50 text-orange-700 px-2 py-1 rounded-md font-bold">{{ number_format($bm->stok_kg * 1000, 0, ',', '.') }} g</span>
                             </td>
                             <td class="px-4 py-3 text-center text-stone-500">{{ number_format($bm->stok_kg, 2, ',', '.') }} kg</td>
-                            <td class="px-4 py-3">
+                            <td class="px-4 py-3 text-right">
                                 <div class="flex justify-end gap-3">
                                     <button type="button" onclick="editWadah('{{ $bm->id }}', '{{ $bm->nama_biji }}', '{{ $bm->stok_kg }}')" class="text-blue-500 hover:text-blue-700 font-bold uppercase text-[10px]">Edit</button>
                                     <form action="{{ route('admin.bahan_baku.destroy_matang', $bm->id) }}" method="POST" onsubmit="return confirm('Hapus wadah ini?')">
@@ -121,7 +117,6 @@
 
     {{-- TAB 2: PACKAGING --}}
     <div id="content-packaging" class="tab-content hidden animate-in fade-in duration-300">
-        {{-- Kode Packaging Tetap Sama Seperti Sebelumnya --}}
         <div class="max-w-5xl bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden mb-8">
             <div class="bg-orange-50 px-8 py-4 border-b border-orange-100">
                 <h3 class="font-bold text-orange-800 uppercase text-xs tracking-widest">Form Packaging</h3>
@@ -156,44 +151,48 @@
     <div id="content-pemasukan" class="tab-content hidden animate-in fade-in duration-300">
         <div class="max-w-5xl bg-stone-900 rounded-2xl shadow-xl overflow-hidden border border-stone-800 mb-8">
             <div class="bg-stone-800/50 px-8 py-4 border-b border-stone-700">
-                <h3 class="text-lg font-bold text-white uppercase tracking-tight">Input Pembelian Biji Mentah</h3>
+                <h3 class="text-sm font-bold text-orange-500 uppercase tracking-tight">Input Pembelian Biji Mentah</h3>
             </div>
             <form action="{{ route('admin.bahan_baku.restock') }}" method="POST" class="p-8">
                 @csrf
                 <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-                    {{-- PERBAIKAN: Input Teks Nama Bahan diganti jadi Select Dropdown --}}
-                    <div>
-                        <label class="block text-xs font-bold text-stone-300 uppercase mb-2">Pilih Bahan Mentah</label>
-                        <select name="bahan_baku_id" id="select_bahan_mentah" class="w-full rounded-xl border-stone-700 bg-stone-800 text-white text-sm focus:ring-orange-500" required>
-                            <option value="">-- Pilih --</option>
+
+                    {{-- INPUT TEKS DENGAN SARAN (DATALIST) --}}
+                    <div class="md:col-span-1">
+                        <label class="block text-xs font-bold text-stone-300 uppercase mb-2">Nama Bahan</label>
+                        <input type="text" name="nama_bahan" list="bahan_list" class="w-full rounded-xl border-stone-700 bg-stone-800 text-white text-sm focus:ring-orange-500" placeholder="Ketik nama bahan..." required autocomplete="off">
+                        <datalist id="bahan_list">
                             @foreach($bahanMentah as $bm)
-                            <option value="{{ $bm->id }}">{{ $bm->nama_bahan }}</option>
-                            @endforeach
-                        </select>
-                        {{-- Input hidden untuk tetap mengirim nama_bahan ke Log --}}
-                        <input type="hidden" name="nama_bahan" id="nama_bahan_hidden">
+                            <option value="{{ $bm->nama_bahan }}">
+                                @endforeach
+                        </datalist>
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-stone-300 uppercase mb-2">Jumlah (Kg)</label>
-                        <input type="number" name="jumlah_masuk" step="0.01" class="w-full rounded-xl border-stone-700 bg-stone-800 text-white text-sm" placeholder="Contoh: 10" required>
+                        <input type="number" name="jumlah_masuk" step="0.01" class="w-full rounded-xl border-stone-700 bg-stone-800 text-white text-sm" placeholder="0.00" required>
                     </div>
+
                     <div>
                         <label class="block text-xs font-bold text-stone-300 uppercase mb-2">Harga (Rp)</label>
-                        <input type="number" name="harga_beli" class="w-full rounded-xl border-stone-700 bg-stone-800 text-white text-sm" placeholder="150000" required>
+                        <input type="number" name="harga_beli" class="w-full rounded-xl border-stone-700 bg-stone-800 text-white text-sm" placeholder="0" required>
                     </div>
+
                     <div>
                         <label class="block text-xs font-bold text-stone-300 uppercase mb-2">Kota / Lokasi</label>
-                        <input type="text" name="lokasi" class="w-full rounded-xl border-stone-700 bg-stone-800 text-white text-sm" placeholder="Contoh: Aceh">
+                        <input type="text" name="lokasi" class="w-full rounded-xl border-stone-700 bg-stone-800 text-white text-sm" placeholder="Aceh, dsb">
                     </div>
-                    <button type="submit" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 rounded-xl transition shadow-lg text-xs uppercase">Simpan</button>
+
+                    <button type="submit" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 rounded-xl transition shadow-lg text-xs uppercase active:scale-95">
+                        Simpan
+                    </button>
                 </div>
             </form>
         </div>
 
-        {{-- RIWAYAT TABEL TETAP SAMA --}}
+        {{-- TABEL RIWAYAT --}}
         <div class="max-w-5xl">
-            <span class="font-bold text-[10px] text-stone-400 uppercase tracking-widest block mb-4">Riwayat Transaksi Pembelian Biji Mentah</span>
+            <span class="font-bold text-[10px] text-stone-400 uppercase tracking-widest block mb-4">Riwayat Transaksi</span>
             <div class="overflow-hidden rounded-xl border border-stone-800 bg-stone-900">
                 <table class="w-full text-left text-xs text-stone-400">
                     <thead class="bg-stone-800/50 text-stone-500 uppercase font-black">
@@ -210,13 +209,13 @@
                         <tr class="hover:bg-stone-800/30">
                             <td class="px-4 py-3 text-[10px]">{{ $s->created_at->format('d/m/y H:i') }}</td>
                             <td class="px-4 py-3 font-bold text-white">{{ $s->nama_bahan }}</td>
-                            <td class="px-4 py-3 text-center text-stone-400">{{ $s->lokasi ?? '-' }}</td>
+                            <td class="px-4 py-3 text-center">{{ $s->lokasi ?? '-' }}</td>
                             <td class="px-4 py-3 text-center text-orange-500">+{{ $s->jumlah_beli }} Kg</td>
                             <td class="px-4 py-3 text-right font-bold text-white">Rp {{ number_format($s->harga_beli, 0, ',', '.') }}</td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="px-4 py-8 text-center text-stone-600 italic">Belum ada riwayat pembelian.</td>
+                            <td colspan="5" class="px-4 py-8 text-center text-stone-600 italic">Belum ada riwayat.</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -225,7 +224,7 @@
         </div>
     </div>
 
-    {{-- MODAL EDIT WADAH --}}
+    {{-- MODAL EDIT --}}
     <div id="modalEditWadah" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
         <div class="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl">
             <h3 class="text-lg font-bold text-stone-800 mb-4">Edit Wadah Biji Matang</h3>
@@ -249,6 +248,7 @@
         </div>
     </div>
 
+    {{-- JAVASCRIPT: Diletakkan di paling bawah dan di luar fungsi modal --}}
     <script>
         function switchTab(tab) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
@@ -272,11 +272,17 @@
 
         function closeModalEdit() {
             document.getElementById('modalEditWadah').classList.add('hidden');
-
-            document.getElementById('select_bahan_mentah').addEventListener('change', function() {
-                const text = this.options[this.selectedIndex].text;
-                document.getElementById('nama_bahan_hidden').value = text;
-            });
         }
+
+        // OTOMATISASI NAMA BAHAN (PENTING: Di luar fungsi lain agar jalan saat load)
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectBahan = document.getElementById('select_bahan_mentah');
+            if (selectBahan) {
+                selectBahan.addEventListener('change', function() {
+                    const text = this.options[this.selectedIndex].text;
+                    document.getElementById('nama_bahan_hidden').value = text;
+                });
+            }
+        });
     </script>
 </x-app-layout>

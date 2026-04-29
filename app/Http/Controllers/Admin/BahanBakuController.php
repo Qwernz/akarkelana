@@ -210,34 +210,37 @@ class BahanBakuController extends Controller
 
     public function restock(Request $request)
     {
-        // 1. Validasi input (Pastikan nama field sesuai dengan yang dikirim form)
         $request->validate([
-            'bahan_baku_id' => 'required|exists:bahan_bakus,id',
-            'nama_bahan'    => 'required',
-            'jumlah_masuk'  => 'required|numeric',
-            'harga_beli'    => 'required|numeric',
-            'lokasi'        => 'nullable|string',
+            'nama_bahan'   => 'required|string',
+            'jumlah_masuk' => 'required|numeric',
+            'harga_beli'   => 'required|numeric',
+            'lokasi'       => 'nullable|string',
         ]);
 
-        // 2. Ambil data bahan baku yang mau di-restock
-        $bahanBaku = BahanBaku::findOrFail($request->bahan_baku_id);
+        $bahanBaku = \App\Models\BahanBaku::where('nama_bahan', $request->nama_bahan)->first();
 
-        // 3. Update stok di tabel BahanBaku (Sesuaikan nama kolom, apakah 'stok' atau 'stok_kg')
-        // Jika di migrasi namanya stok_kg, gunakan stok_kg
+        if (!$bahanBaku) {
+            $bahanBaku = \App\Models\BahanBaku::create([
+                'nama_bahan' => $request->nama_bahan,
+                'stok_kg' => 0,
+                'total_biaya_pengeluaran' => 0
+            ]);
+        }
+
+        // 2. Update stok dan pengeluaran
         $bahanBaku->increment('stok_kg', $request->jumlah_masuk);
-
-        // 4. Update Total Pengeluaran di tabel BahanBaku
         $bahanBaku->increment('total_biaya_pengeluaran', $request->harga_beli);
 
-        // 5. Simpan Log (PENTING: Masukkan bahan_baku_id agar tidak error)
+        // 3. Simpan ke Log
+        // Sekarang kita ambil ID langsung dari objek $bahanBaku yang sudah pasti ada
         \App\Models\BahanBakuLog::create([
-            'bahan_baku_id' => $bahanBaku->id, // Ini kunci agar tidak error 'Undefined constant'
+            'bahan_baku_id' => $bahanBaku->id, // INI KUNCINYA
             'nama_bahan'    => $request->nama_bahan,
             'jumlah_beli'   => $request->jumlah_masuk,
             'harga_beli'    => $request->harga_beli,
             'lokasi'        => $request->lokasi,
         ]);
 
-        return back()->with('success', 'Pembelian berhasil dicatat dan stok diperbarui!');
+        return back()->with('success', 'Data stok ' . $bahanBaku->nama_bahan . ' berhasil diperbarui!');
     }
 }

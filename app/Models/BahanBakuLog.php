@@ -9,11 +9,11 @@ class BahanBakuLog extends Model
 {
     use HasFactory;
 
-    // Tambahkan baris ini agar kolom-kolom ini diizinkan untuk disimpan
     protected $fillable = [
+        'bahan_baku_id',
         'nama_bahan',
         'jumlah_beli',
         'harga_beli',
-        'lokasi',
+        'lokasi'
     ];
 }
