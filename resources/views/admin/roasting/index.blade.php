@@ -272,6 +272,11 @@
 
         function closeModalEdit() {
             document.getElementById('modalEditWadah').classList.add('hidden');
+
+            document.getElementById('select_bahan_mentah').addEventListener('change', function() {
+                const text = this.options[this.selectedIndex].text;
+                document.getElementById('nama_bahan_hidden').value = text;
+            });
         }
     </script>
 </x-app-layout>
