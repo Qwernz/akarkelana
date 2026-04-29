@@ -63,6 +63,7 @@ class CartController extends Controller
         }
 
         try {
+            // 1. Buat pesanan terlebih dahulu di database kita
             $order = Order::create([
                 'customer_name' => $request->name,
                 'customer_phone' => $request->phone,
@@ -73,6 +74,7 @@ class CartController extends Controller
                 'user_id' => Auth::id(),
             ]);
 
+            // 2. Loop item keranjang ke tabel OrderItem
             foreach ($cart as $variantId => $details) {
                 $variant = \App\Models\ProductVariant::find($variantId);
                 if ($variant) {
@@ -84,11 +86,12 @@ class CartController extends Controller
                         'quantity'   => $details['quantity'],
                         'price'      => $details['price'],
                     ]);
+                    // Kurangi stok barang
                     $variant->decrement('stock', $details['quantity']);
                 }
             }
 
-            // --- KONFIGURASI MIDTRANS ---
+            // 3. Konfigurasi Midtrans
             \Midtrans\Config::$serverKey = config('services.midtrans.serverKey');
             \Midtrans\Config::$isProduction = config('services.midtrans.isProduction');
             \Midtrans\Config::$isSanitized = true;
@@ -103,7 +106,6 @@ class CartController extends Controller
                     'first_name' => $request->name,
                     'phone' => $request->phone,
                 ],
-                // Tambahkan ini agar semua metode aktif
                 'enabled_payments' => [
                     'credit_card',
                     'gopay',
@@ -113,27 +115,26 @@ class CartController extends Controller
                     'bni_va',
                     'bri_va',
                     'mandiri_va',
-                    'permata_va',
-                    'other_va',
                     'indomaret',
-                    'alfamart',
-                    'akulaku'
+                    'alfamart'
                 ],
             ];
 
-            // INI BAGIAN PENTING: Cukup panggil createTransaction
+            // 4. Panggil Midtrans Snap
             $midtransResponse = \Midtrans\Snap::createTransaction($params);
 
-            // Simpan URL Redirect ke kolom snap_token
+            // 5. Update kolom snap_token dengan URL Redirect yang didapat
             $order->update([
                 'snap_token' => $midtransResponse->redirect_url
             ]);
 
+            // 6. Kosongkan keranjang belanja
             session()->forget('cart');
 
-            return redirect()->route('checkout.success', $order->id);
+            // 7. ALIRKAN LANGSUNG KE MIDTRANS
+            return redirect($midtransResponse->redirect_url);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
