@@ -44,7 +44,7 @@
 
             {{-- Logo Section --}}
             <div class="p-6 flex items-center gap-3 border-b border-stone-800 min-w-[256px]">
-                <a href="{{ route('home') }}" class="flex-shrink-0 p-1.5 rounded-lg text-stone-400 hover:bg-stone-800 hover:text-orange-500 transition-colors" title="Kembali ke Beranda">
+                <a href="{{ route('home') }}" class="flex-shrink-0 p-1.5 rounded-lg text-stone-400 hover:bg-stone-800 hover:text-orange-500 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
@@ -57,71 +57,39 @@
                 </div>
             </div>
 
-            {{-- Navigation --}}
-            <nav class="flex-1 px-4 space-y-2 mt-4 overflow-y-auto overflow-x-hidden">
+            {{-- Navigasi (Flex-1 & Scrollable) --}}
+            <nav class="flex-1 px-4 space-y-2 mt-4 overflow-y-auto overflow-x-hidden custom-scrollbar">
                 @auth
-                <x-sidebar-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                    Dashboard
-                </x-sidebar-link>
+                <x-sidebar-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">Dashboard</x-sidebar-link>
 
-                {{-- MENU KHUSUS PELANGGAN --}}
                 @if(Auth::user()->role === 'user')
-                <x-sidebar-link :href="route('orders.history')" :active="request()->routeIs('orders.history')">
-                    Riwayat Pesanan
-                </x-sidebar-link>
+                <x-sidebar-link :href="route('orders.history')" :active="request()->routeIs('orders.history')">Riwayat Pesanan</x-sidebar-link>
                 @endif
 
-                {{-- MENU KHUSUS ADMIN --}}
                 @if(Auth::user()->role === 'admin')
                 <div class="px-3 pt-4 pb-2 text-[10px] font-bold text-stone-500 uppercase tracking-widest truncate" x-show="sidebarOpen">Manajemen</div>
-
-                <x-sidebar-link :href="route('admin.sales.analysis')" :active="request()->routeIs('admin.sales.analysis')">
-                    Analisis Penjualan
-                </x-sidebar-link>
-
-                <x-sidebar-link :href="route('products.index')" :active="request()->routeIs('products.*')">
-                    Produk Biji Kopi
-                </x-sidebar-link>
-
-                <x-sidebar-link :href="route('admin.roasting')" :active="request()->routeIs('admin.roasting')">
-                    Bahan Baku Biji Kopi
-                </x-sidebar-link>
-
-                <x-sidebar-link :href="route('admin.orders')" :active="request()->routeIs('admin.orders')">
-                    Laporan Harian
-                </x-sidebar-link>
-
-                <x-sidebar-link :href="route('admin.sales.history')" :active="request()->routeIs('admin.sales.history')">
-                    Riwayat Penjualan
-                </x-sidebar-link>
-
-                <x-sidebar-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
-                    Ulasan Pelanggan
-                </x-sidebar-link>
-
-                <x-sidebar-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
-                    Daftar Akun
-                </x-sidebar-link>
+                <x-sidebar-link :href="route('admin.sales.analysis')" :active="request()->routeIs('admin.sales.analysis')">Analisis Penjualan</x-sidebar-link>
+                <x-sidebar-link :href="route('products.index')" :active="request()->routeIs('products.*')">Produk Biji Kopi</x-sidebar-link>
+                <x-sidebar-link :href="route('admin.roasting')" :active="request()->routeIs('admin.roasting')">Bahan Baku</x-sidebar-link>
+                <x-sidebar-link :href="route('admin.orders')" :active="request()->routeIs('admin.orders')">Laporan Harian</x-sidebar-link>
+                <x-sidebar-link :href="route('admin.sales.history')" :active="request()->routeIs('admin.sales.history')">Riwayat Penjualan</x-sidebar-link>
+                <x-sidebar-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">Ulasan Pelanggan</x-sidebar-link>
+                <x-sidebar-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">Daftar Akun</x-sidebar-link>
                 @endif
 
-                {{-- MENU KHUSUS KASIR --}}
                 @if(Auth::user()->role === 'kasir')
                 <div class="px-3 pt-4 pb-2 text-xs font-bold text-stone-500 uppercase tracking-widest" x-show="sidebarOpen">Transaksi</div>
-                <x-sidebar-link :href="route('kasir.orders')" :active="request()->routeIs('kasir.orders')">
-                    Pesanan Masuk
-                </x-sidebar-link>
-                <x-sidebar-link :href="route('kasir.history')" :active="request()->routeIs('kasir.history')">
-                    Riwayat Pesanan
-                </x-sidebar-link>
+                <x-sidebar-link :href="route('kasir.orders')" :active="request()->routeIs('kasir.orders')">Pesanan Masuk</x-sidebar-link>
+                <x-sidebar-link :href="route('kasir.history')" :active="request()->routeIs('kasir.history')">Riwayat Pesanan</x-sidebar-link>
                 @endif
                 @endauth
             </nav>
 
-            {{-- Logout --}}
-            <div class="p-4 border-t border-stone-800">
+            {{-- Logout (Sticky Bottom) --}}
+            <div class="p-4 border-t border-stone-800 bg-stone-900 mt-auto">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button class="flex items-center text-stone-400 hover:text-red-400 w-full px-3 py-2 transition text-sm">
+                    <button class="flex items-center text-stone-400 hover:text-red-400 w-full px-3 py-2 transition text-sm font-bold">
                         <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
@@ -131,9 +99,11 @@
             </div>
         </aside>
 
-        {{-- MAIN CONTENT --}}
+        {{-- MAIN CONTENT WRAPPER --}}
         <div class="flex-1 flex flex-col min-w-0 bg-gray-50">
-            <header class="bg-white shadow-sm h-16 flex items-center px-4 md:px-6 justify-between z-50">
+
+            {{-- NAVBAR --}}
+            <header class="bg-white shadow-sm h-16 flex items-center px-4 md:px-6 justify-between z-50 flex-shrink-0">
                 <div class="flex items-center gap-4">
                     <button @click="sidebarOpen = !sidebarOpen" class="p-2 rounded-lg text-stone-600 hover:bg-stone-100 focus:outline-none transition">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,19 +112,25 @@
                     </button>
                 </div>
 
-                <div class="flex items-center space-x-3">
+                {{-- Profile Section (Muncul di HP & Desktop) --}}
+                <div class="flex items-center space-x-2 md:space-x-3">
                     @auth
-                    <div class="text-right hidden sm:block">
-                        <p class="text-xs font-bold text-stone-800 capitalize leading-none">{{ Auth::user()->name }}</p>
-                        <span class="text-[9px] text-orange-600 font-bold tracking-tighter uppercase">{{ Auth::user()->role }}</span>
+                    <div class="text-right flex flex-col justify-center">
+                        <p class="text-[10px] md:text-xs font-bold text-stone-800 capitalize leading-none">
+                            {{ Auth::user()->name }}
+                        </p>
+                        <span class="text-[8px] md:text-[9px] text-orange-600 font-bold uppercase tracking-tighter">
+                            {{ Auth::user()->role }}
+                        </span>
                     </div>
-                    <div class="h-8 w-8 rounded-full bg-stone-800 flex items-center justify-center text-white text-xs font-bold ring-2 ring-stone-100">
+                    <div class="h-7 w-7 md:h-8 md:w-8 rounded-full bg-stone-800 flex items-center justify-center text-white text-xs font-bold ring-2 ring-stone-100 flex-shrink-0">
                         {{ substr(Auth::user()->name, 0, 1) }}
                     </div>
                     @endauth
                 </div>
             </header>
 
+            {{-- AREA KONTEN (Penting: Main berada di luar Header) --}}
             <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8">
                 {{ $slot }}
             </main>
