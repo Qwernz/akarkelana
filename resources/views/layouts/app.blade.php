@@ -17,7 +17,9 @@
 
         /* Animasi halus untuk transisi lebar sidebar */
         .sidebar-transition {
-            transition: width 0.3s transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-property: width, transform;
+            transition-duration: 300ms;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         }
     </style>
 </head>
@@ -60,16 +62,24 @@
             {{-- Navigasi --}}
             <nav class="flex-1 px-4 space-y-2 mt-4 overflow-y-auto overflow-x-hidden">
                 @auth
-                <x-sidebar-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" :sidebarOpen="sidebarOpen">
+                <x-sidebar-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     Dashboard
                 </x-sidebar-link>
 
                 @if(Auth::user()->role === 'admin')
                 <div class="px-3 pt-4 pb-2 text-[10px] font-bold text-stone-500 uppercase tracking-widest truncate" x-show="sidebarOpen">Manajemen</div>
-                <x-sidebar-link :href="route('admin.sales.analysis')" :active="request()->routeIs('admin.sales.analysis')" :sidebarOpen="sidebarOpen">Analisis Penjualan</x-sidebar-link>
-                <x-sidebar-link :href="route('products.index')" :active="request()->routeIs('products.*')" :sidebarOpen="sidebarOpen">Produk</x-sidebar-link>
-                <x-sidebar-link :href="route('admin.roasting')" :active="request()->routeIs('admin.roasting')" :sidebarOpen="sidebarOpen">Bahan Baku</x-sidebar-link>
-                <x-sidebar-link :href="route('admin.orders')" :active="request()->routeIs('admin.orders')" :sidebarOpen="sidebarOpen">Laporan</x-sidebar-link>
+                <x-sidebar-link :href="route('admin.sales.analysis')" :active="request()->routeIs('admin.sales.analysis')">
+                    Analisis Penjualan
+                </x-sidebar-link>
+                <x-sidebar-link :href="route('products.index')" :active="request()->routeIs('products.*')">
+                    Produk
+                </x-sidebar-link>
+                <x-sidebar-link :href="route('admin.roasting')" :active="request()->routeIs('admin.roasting')">
+                    Bahan Baku
+                </x-sidebar-link>
+                <x-sidebar-link :href="route('admin.orders')" :active="request()->routeIs('admin.orders')">
+                    Laporan
+                </x-sidebar-link>
                 @endif
                 @endauth
             </nav>
