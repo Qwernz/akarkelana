@@ -43,21 +43,25 @@
     @endif
 
     {{-- 2. NAVIGASI GELAP --}}
-    <nav class="sticky top-0 z-50 flex items-center justify-between px-8 py-4 bg-[#12100e]/80 backdrop-blur-md shadow-lg border-b border-stone-800">
+    {{-- Ganti bagian <nav> Anda dengan versi yang lebih rapi ini --}}
+    <nav class="sticky top-0 z-[100] flex items-center justify-between px-8 py-4 bg-[#12100e]/80 backdrop-blur-md shadow-lg border-b border-stone-800">
         <div class="flex items-center">
-            <img src="{{ asset('Images/Logo.jpg') }}" alt="Logo Akar Kelana" class="h-12 w-auto object-contain rounded-lg">
+            <a href="/">
+                <img src="{{ asset('Images/Logo.jpg') }}" alt="Logo Akar Kelana" class="h-12 w-auto object-contain rounded-lg hover:opacity-80 transition">
+            </a>
         </div>
+
         <div class="space-x-8 flex items-center">
-            <a href="/" class="hover:text-orange-500 font-semibold text-stone-300 transition">Beranda</a>
-            <a href="#produk" class="hover:text-orange-500 font-semibold text-stone-300 transition">Produk</a>
+            <a href="/" class="hover:text-orange-500 font-semibold text-stone-300 transition text-sm">Beranda</a>
+            <a href="#produk" class="hover:text-orange-500 font-semibold text-stone-300 transition text-sm">Produk</a>
 
             @auth
             @if(Auth::user()->role === 'user' || Auth::user()->role === 'kasir')
             <a href="{{ route('cart') }}" class="relative p-2.5 bg-stone-800 rounded-full hover:bg-stone-700 transition text-stone-200 border border-stone-700">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
-                <span class="absolute -top-1 -right-1 bg-orange-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-[#12100e]">
+                <span class="absolute -top-1 -right-1 bg-orange-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full border-2 border-[#12100e]">
                     {{ count((array) session('cart')) }}
                 </span>
             </a>
@@ -68,24 +72,63 @@
                 @auth
                 <button @click="open = !open" @click.away="open = false" class="flex items-center space-x-3 focus:outline-none group">
                     <div class="flex flex-col items-end leading-tight hidden md:flex">
-                        <span class="text-[10px] font-bold text-orange-500 uppercase tracking-widest">{{ Auth::user()->role }}</span>
-                        <span class="text-sm font-bold text-stone-200">{{ Auth::user()->name }}</span>
+                        <span class="text-[9px] font-bold text-orange-500 uppercase tracking-widest">{{ Auth::user()->role }}</span>
+                        <span class="text-xs font-bold text-stone-200">{{ Auth::user()->name }}</span>
                     </div>
-                    <div class="h-10 w-10 rounded-full bg-stone-800 flex items-center justify-center text-white font-bold border-2 border-stone-700 shadow-sm group-hover:bg-orange-700 transition">
+                    <div class="h-9 w-9 rounded-full bg-stone-800 flex items-center justify-center text-white text-sm font-bold border border-stone-700 shadow-sm group-hover:bg-orange-700 transition">
                         {{ substr(Auth::user()->name, 0, 1) }}
                     </div>
                 </button>
-                <div x-show="open" x-cloak x-transition class="absolute right-0 mt-3 w-56 bg-stone-900 rounded-2xl shadow-2xl border border-stone-800 z-[70] overflow-hidden">
-                    <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-3 text-sm text-stone-200 hover:bg-stone-800 font-bold border-b border-stone-800">Dashboard</a>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="flex items-center w-full text-left px-4 py-3 text-sm text-red-500 hover:bg-red-950/30 font-bold">Keluar Akun</button>
-                    </form>
+
+                {{-- DROPDOWN PROFIL --}}
+                <div x-show="open" x-cloak x-transition
+                    class="absolute right-0 mt-3 w-64 bg-stone-900 rounded-2xl shadow-2xl border border-stone-800 z-[110] overflow-hidden">
+
+                    {{-- INFO PROFIL --}}
+                    <div class="px-4 py-4 border-b border-stone-800 bg-stone-800/30">
+                        <div class="flex items-center space-x-3">
+                            <div class="h-10 w-10 rounded-full bg-orange-600 flex items-center justify-center text-white font-bold shadow-lg">
+                                {{ substr(Auth::user()->name, 0, 1) }}
+                            </div>
+                            <div class="flex flex-col overflow-hidden">
+                                <span class="text-sm font-bold text-white capitalize truncate">{{ Auth::user()->name }}</span>
+                                <span class="text-[10px] text-orange-500 font-black uppercase tracking-widest">{{ Auth::user()->role }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- MENU LINKS --}}
+                    <div class="py-1">
+                        <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-3 text-sm text-stone-200 hover:bg-stone-800 font-bold transition-colors">
+                            <svg class="w-4 h-4 mr-3 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            Dashboard
+                        </a>
+
+                        {{-- TOMBOL PROFIL SAYA --}}
+                        <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-3 text-sm text-stone-200 hover:bg-stone-800 font-bold transition-colors">
+                            <svg class="w-4 h-4 mr-3 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            Profil Saya
+                        </a>
+
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="flex items-center w-full text-left px-4 py-3 text-sm text-red-500 hover:bg-red-950/30 font-bold transition-colors border-t border-stone-800/50">
+                                <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                Keluar Akun
+                            </button>
+                        </form>
+                    </div>
                 </div>
                 @else
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('login') }}" class="text-sm font-bold text-stone-300 hover:text-orange-500 transition">Login</a>
-                    <a href="{{ route('register') }}" class="bg-orange-700 text-white text-sm font-bold px-6 py-2.5 rounded-full hover:bg-orange-800 transition shadow-md">Register</a>
+                    <a href="{{ route('login') }}" class="text-xs font-bold text-stone-300 hover:text-orange-500 transition">Login</a>
+                    <a href="{{ route('register') }}" class="bg-orange-700 text-white text-xs font-bold px-5 py-2 rounded-full hover:bg-orange-800 transition shadow-md">Register</a>
                 </div>
                 @endauth
             </div>
