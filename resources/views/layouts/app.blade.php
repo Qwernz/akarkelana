@@ -3,151 +3,91 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {{-- Meta Viewport Penting untuk HP --}}
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Akar Kelana - Coffee Roastery</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <title>Akar Kelana - Dashboard</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/jpeg" href="{{ asset('Images/Logo.jpg') }}">
 
     <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
+
         @media print {
 
             aside,
             header,
             nav,
-            form,
             button,
             .no-print {
                 display: none !important;
             }
 
-            body {
-                background-color: white !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-
             main {
                 margin: 0 !important;
-                padding: 0 !important;
                 width: 100% !important;
-                overflow: visible !important;
             }
-
-            .shadow-sm,
-            .shadow-md,
-            .shadow-lg {
-                box-shadow: none !important;
-                border: 1px solid #e5e7eb !important;
-            }
-
-            .print-only {
-                display: block !important;
-            }
-        }
-
-        .print-only {
-            display: none;
         }
     </style>
 </head>
 
-<body class="font-sans antialiased bg-gray-100" x-data="{ sidebarOpen: true }">
-    <div class="flex h-screen">
+<body class="bg-gray-100 antialiased">
+    {{-- HANYA SATU x-data DI SINI UNTUK SELURUH DASHBOARD --}}
+    <div x-data="{ sidebarOpen: false }" class="relative min-h-screen md:flex" x-cloak>
 
-        {{-- SIDEBAR --}}
-        <aside :class="sidebarOpen ? 'w-64' : 'w-20'" class="bg-stone-900 text-white transition-all duration-300 flex-shrink-0 hidden md:flex flex-col">
+        {{-- MOBILE HEADER: Muncul cuma di HP --}}
+        <div class="bg-stone-900 text-white flex justify-between items-center p-4 md:hidden fixed top-0 left-0 right-0 z-[60]">
+            <span class="font-bold uppercase tracking-widest text-xs">Akar Kelana</span>
+            <button @click="sidebarOpen = !sidebarOpen" class="p-2 focus:outline-none bg-stone-800 rounded-lg">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path x-show="!sidebarOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    <path x-show="sidebarOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
 
-            <div class="p-6 flex items-center gap-2">
-                <a href="{{ route('home') }}" class="flex-shrink-0 p-1.5 rounded-lg text-stone-400 hover:bg-stone-800 hover:text-orange-500 transition-colors" title="Kembali ke Beranda">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                </a>
-                <a href="{{ route('home') }}" class="flex items-center overflow-hidden">
-                    <img src="{{ asset('Images/Logo.jpg') }}" alt="Logo Akar Kelana" class="w-9 h-9 flex-shrink-0 rounded-lg object-cover border border-stone-800">
-                    <span x-show="sidebarOpen" class="ml-2 font-bold text-[11px] leading-tight tracking-tight text-white uppercase">
-                        Akar Kelana <br> Coffee Roastery
-                    </span>
-                </a>
+        {{-- SIDEBAR: Menggunakan Transform agar tidak menutupi tombol di HP --}}
+        <aside
+            :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+            class="fixed inset-y-0 left-0 z-[70] bg-stone-900 text-white w-64 transform md:relative md:translate-x-0 transition duration-300 ease-in-out shadow-2xl flex flex-col">
+
+            <div class="p-6 flex items-center gap-3 border-b border-stone-800">
+                <img src="{{ asset('Images/Logo.jpg') }}" alt="Logo" class="w-10 h-10 rounded-lg object-cover border border-stone-700">
+                <div class="leading-tight">
+                    <p class="font-bold text-xs uppercase tracking-tight text-white">Akar Kelana</p>
+                    <p class="text-[9px] text-stone-500 uppercase">Coffee Roastery</p>
+                </div>
             </div>
 
-            <nav class="flex-1 px-4 space-y-2 mt-4">
+            <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
                 @auth
-                {{-- MENU UNTUK YANG SUDAH LOGIN --}}
-                <x-sidebar-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" icon="...">
+                <x-sidebar-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     Dashboard
                 </x-sidebar-link>
 
-                @if(Auth::user()->role === 'user')
-                <x-sidebar-link :href="route('orders.history')" :active="request()->routeIs('orders.history')">
-                    Riwayat Pesanan
-                </x-sidebar-link>
-                @endif
-
                 @if(Auth::user()->role === 'admin')
-                <div x-show="sidebarOpen" class="px-3 pt-4 pb-2 text-xs font-bold text-stone-500 uppercase tracking-widest">Manajemen</div>
-
-                <x-sidebar-link :href="route('admin.sales.analysis')" :active="request()->routeIs('admin.sales.analysis')">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                    Analisis Penjualan
-                </x-sidebar-link>
-
-                <x-sidebar-link :href="route('products.index')" :active="request()->routeIs('products.*')">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                    </svg>
-                    Produk Biji Kopi
-                </x-sidebar-link>
-
-                <x-sidebar-link :href="route('admin.roasting')" :active="request()->routeIs('admin.roasting')">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                    </svg>
-                    Bahan Baku Biji Kopi
-                </x-sidebar-link>
-
-                <x-sidebar-link :href="route('admin.orders')" :active="request()->routeIs('admin.orders')">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012-2" />
-                    </svg>
-                    Laporan Harian
-                </x-sidebar-link>
-
-                <x-sidebar-link :href="route('admin.sales.history')" :active="request()->routeIs('admin.sales.history')">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Riwayat Penjualan
-                </x-sidebar-link>
-
-                <x-sidebar-link :href="route('admin.reviews.index')" :active="request()->routeIs('admin.reviews.*')">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                    </svg>
-                    Ulasan Pelanggan
-                </x-sidebar-link>
-
-                <x-sidebar-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 01-12 0v1zm0-10a4 4 0 110 8 4 4 0 010-8z" />
-                    </svg>
-                    Daftar Akun
-                </x-sidebar-link>
+                <div class="px-3 pt-4 pb-1 text-[10px] font-black text-stone-600 uppercase tracking-[0.2em]">Manajemen</div>
+                <x-sidebar-link :href="route('admin.sales.analysis')" :active="request()->routeIs('admin.sales.analysis')">Analisis</x-sidebar-link>
+                <x-sidebar-link :href="route('products.index')" :active="request()->routeIs('products.*')">Produk Kopi</x-sidebar-link>
+                <x-sidebar-link :href="route('admin.roasting')" :active="request()->routeIs('admin.roasting')">Bahan Baku</x-sidebar-link>
+                <x-sidebar-link :href="route('admin.orders')" :active="request()->routeIs('admin.orders')">Laporan</x-sidebar-link>
+                <x-sidebar-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">Daftar Akun</x-sidebar-link>
                 @endif
 
                 @if(Auth::user()->role === 'kasir')
-                <div x-show="sidebarOpen" class="px-3 pt-4 pb-2 text-xs font-bold text-stone-500 uppercase tracking-widest">Transaksi</div>
+                <div class="px-3 pt-4 pb-1 text-[10px] font-black text-stone-600 uppercase tracking-[0.2em]">Transaksi</div>
                 <x-sidebar-link :href="route('kasir.orders')" :active="request()->routeIs('kasir.orders')">Pesanan Masuk</x-sidebar-link>
-                <x-sidebar-link :href="route('kasir.history')" :active="request()->routeIs('kasir.history')">Riwayat Pesanan</x-sidebar-link>
                 @endif
-
-                @else
-                {{-- MENU UNTUK PENGUNJUNG (GUEST) --}}
-                <p x-show="sidebarOpen" class="text-[10px] text-stone-500 px-4 mt-4 uppercase font-bold tracking-widest">Menu Pengunjung</p>
-                <x-sidebar-link :href="route('login')">Masuk / Login</x-sidebar-link>
-                <x-sidebar-link :href="route('home')">Lihat Katalog</x-sidebar-link>
                 @endauth
             </nav>
 
@@ -155,45 +95,41 @@
             <div class="p-4 border-t border-stone-800">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button class="flex items-center text-stone-400 hover:text-white w-full px-3 py-2 transition">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <button class="flex items-center text-stone-400 hover:text-red-400 w-full px-3 py-2 transition text-sm font-bold">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                         </svg>
-                        <span x-show="sidebarOpen" class="ml-3 font-medium">Keluar Akun</span>
+                        Keluar
                     </button>
                 </form>
             </div>
             @endauth
         </aside>
 
-        {{-- MAIN CONTENT --}}
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="bg-white shadow-sm h-16 flex items-center px-6 justify-between">
-                <button @click="sidebarOpen = !sidebarOpen" class="text-stone-600 focus:outline-none hover:text-stone-900 transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path d="M4 6h16M4 12h16M4 18h16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </button>
-
-                <div class="flex items-center space-x-4">
-                    @auth
+        {{-- MAIN CONTENT AREA --}}
+        <div class="flex-1 flex flex-col h-screen overflow-hidden">
+            {{-- Header Desktop --}}
+            <header class="bg-white shadow-sm h-16 hidden md:flex items-center px-8 justify-between z-40">
+                <h2 class="text-sm font-bold text-stone-400 uppercase tracking-widest">Dashboard System</h2>
+                <div class="flex items-center gap-3">
                     <div class="text-right">
-                        <div class="text-sm font-bold text-stone-700 capitalize">{{ Auth::user()->name }}</div>
-                        <span class="text-[10px] bg-stone-100 text-stone-600 px-2 py-0.5 rounded font-bold uppercase tracking-tighter">{{ Auth::user()->role }}</span>
+                        <p class="text-xs font-bold text-stone-800">{{ Auth::user()->name }}</p>
+                        <p class="text-[9px] text-orange-600 font-bold uppercase">{{ Auth::user()->role }}</p>
                     </div>
                     <div class="h-8 w-8 rounded-full bg-stone-800 flex items-center justify-center text-white text-xs font-bold">
                         {{ substr(Auth::user()->name, 0, 1) }}
                     </div>
-                    @else
-                    <a href="{{ route('login') }}" class="text-sm font-bold text-orange-600 hover:text-orange-700 uppercase tracking-tighter">Login</a>
-                    @endauth
                 </div>
             </header>
 
-            <main class="flex-1 overflow-x-hidden overflow-y-auto p-6 bg-gray-50">
+            {{-- Slot Konten Utama --}}
+            <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8 pt-20 md:pt-8 bg-gray-50">
                 {{ $slot }}
             </main>
         </div>
+
+        {{-- Overlay HP: Supaya tombol di bawah bisa dipencet kalau sidebar tutup --}}
+        <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 bg-black/50 z-[65] md:hidden"></div>
     </div>
 </body>
 
