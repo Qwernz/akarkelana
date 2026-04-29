@@ -161,19 +161,27 @@
             <form action="{{ route('admin.bahan_baku.restock') }}" method="POST" class="p-8">
                 @csrf
                 <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                    {{-- PERBAIKAN: Input Teks Nama Bahan diganti jadi Select Dropdown --}}
                     <div>
-                        <label class="block text-xs font-bold text-stone-300 uppercase mb-2">Nama Bahan</label>
-                        <input type="text" name="nama_bahan" class="w-full rounded-xl border-stone-700 bg-stone-800 text-white text-sm" placeholder="Arabika" required>
+                        <label class="block text-xs font-bold text-stone-300 uppercase mb-2">Pilih Bahan Mentah</label>
+                        <select name="bahan_baku_id" id="select_bahan_mentah" class="w-full rounded-xl border-stone-700 bg-stone-800 text-white text-sm focus:ring-orange-500" required>
+                            <option value="">-- Pilih --</option>
+                            @foreach($bahanMentah as $bm)
+                            <option value="{{ $bm->id }}">{{ $bm->nama_bahan }}</option>
+                            @endforeach
+                        </select>
+                        {{-- Input hidden untuk tetap mengirim nama_bahan ke Log --}}
+                        <input type="hidden" name="nama_bahan" id="nama_bahan_hidden">
                     </div>
+
                     <div>
                         <label class="block text-xs font-bold text-stone-300 uppercase mb-2">Jumlah (Kg)</label>
-                        <input type="number" name="jumlah_masuk" step="0.01" class="w-full rounded-xl border-stone-700 bg-stone-800 text-white text-sm" required>
+                        <input type="number" name="jumlah_masuk" step="0.01" class="w-full rounded-xl border-stone-700 bg-stone-800 text-white text-sm" placeholder="Contoh: 10" required>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-stone-300 uppercase mb-2">Harga (Rp)</label>
-                        <input type="number" name="harga_beli" class="w-full rounded-xl border-stone-700 bg-stone-800 text-white text-sm" required>
+                        <input type="number" name="harga_beli" class="w-full rounded-xl border-stone-700 bg-stone-800 text-white text-sm" placeholder="150000" required>
                     </div>
-                    {{-- INPUT LOKASI BARU --}}
                     <div>
                         <label class="block text-xs font-bold text-stone-300 uppercase mb-2">Kota / Lokasi</label>
                         <input type="text" name="lokasi" class="w-full rounded-xl border-stone-700 bg-stone-800 text-white text-sm" placeholder="Contoh: Aceh">
@@ -183,7 +191,7 @@
             </form>
         </div>
 
-        {{-- RIWAYAT PEMBELIAN (PENGGANTI STOK SAAT INI) --}}
+        {{-- RIWAYAT TABEL TETAP SAMA --}}
         <div class="max-w-5xl">
             <span class="font-bold text-[10px] text-stone-400 uppercase tracking-widest block mb-4">Riwayat Transaksi Pembelian Biji Mentah</span>
             <div class="overflow-hidden rounded-xl border border-stone-800 bg-stone-900">
@@ -192,7 +200,7 @@
                         <tr>
                             <th class="px-4 py-3">Tanggal</th>
                             <th class="px-4 py-3">Nama Bahan</th>
-                            <th class="px-4 py-3 text-center">Lokasi</th> {{-- Header Baru --}}
+                            <th class="px-4 py-3 text-center">Lokasi</th>
                             <th class="px-4 py-3 text-center">Jumlah</th>
                             <th class="px-4 py-3 text-right">Biaya</th>
                         </tr>
@@ -202,13 +210,13 @@
                         <tr class="hover:bg-stone-800/30">
                             <td class="px-4 py-3 text-[10px]">{{ $s->created_at->format('d/m/y H:i') }}</td>
                             <td class="px-4 py-3 font-bold text-white">{{ $s->nama_bahan }}</td>
-                            <td class="px-4 py-3 text-center text-stone-400">{{ $s->lokasi ?? '-' }}</td> {{-- Data Lokasi --}}
+                            <td class="px-4 py-3 text-center text-stone-400">{{ $s->lokasi ?? '-' }}</td>
                             <td class="px-4 py-3 text-center text-orange-500">+{{ $s->jumlah_beli }} Kg</td>
                             <td class="px-4 py-3 text-right font-bold text-white">Rp {{ number_format($s->harga_beli, 0, ',', '.') }}</td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="4" class="px-4 py-8 text-center text-stone-600 italic">Belum ada riwayat pembelian.</td>
+                            <td colspan="5" class="px-4 py-8 text-center text-stone-600 italic">Belum ada riwayat pembelian.</td>
                         </tr>
                         @endforelse
                     </tbody>
